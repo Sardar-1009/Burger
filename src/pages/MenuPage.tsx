@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../firebase';
-import { collection, getDocs, DocumentData } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
+
+interface Burger {
+  id: string;
+  name: string;
+  ingredients: { name: string; count: number }[];
+}
 
 const MenuPage: React.FC = () => {
-  const [burgers, setBurgers] = useState<DocumentData[]>([]);
+  const [burgers, setBurgers] = useState<Burger[]>([]);
 
   useEffect(() => {
     const fetchBurgers = async () => {
@@ -12,7 +18,8 @@ const MenuPage: React.FC = () => {
         const querySnapshot = await getDocs(collection(db, 'burgers'));
         const burgerList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          name: doc.data().name,
+          ingredients: doc.data().ingredients,
         }));
         setBurgers(burgerList);
       } catch (error) {
@@ -34,7 +41,7 @@ const MenuPage: React.FC = () => {
             <div key={burger.id} className="bg-white p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-2">{burger.name}</h2>
               <ul className="mb-4">
-                {burger.ingredients.map((ingredient: any, index: number) => (
+                {burger.ingredients.map((ingredient, index) => (
                   <li key={index}>
                     {ingredient.name} x{ingredient.count}
                   </li>
@@ -42,7 +49,7 @@ const MenuPage: React.FC = () => {
               </ul>
               <Link
                 to={`/edit/${burger.id}`}
-                classNameetés: "text-blue-500 hover:underline"
+                className="text-blue-500 hover:underline"
               >
                 Редактировать
               </Link>

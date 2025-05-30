@@ -2,6 +2,7 @@ import meatImage from './assets/meat.jpg';
 import cheeseImage from './assets/cheese.jpg';
 import lettuceImage from './assets/lettuce.jpg';
 import baconImage from './assets/bacon.jpg';
+import { Ingredient } from './types';
 
 export const INGREDIENTS: Ingredient[] = [
   { name: 'Meat', price: 80, image: meatImage },

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import IngredientList from './components/IngredientList';
 import BurgerConstructor from './components/BurgerConstructor';
+import ErrorBoundary from './components/ErrorBoundary'; 
 import { INGREDIENTS } from './constants/ingredients';
 import { BurgerIngredient } from './types/Ingredient';
 import { db } from './firebase';
@@ -64,49 +65,51 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100 p-6">
-        <nav className="mb-6">
-          <Link to="/" className="mr-4 text-blue-500 hover:underline">Конструктор</Link>
-          <Link to="/menu" className="text-blue-500 hover:underline">Меню</Link>
-        </nav>
+      <ErrorBoundary>
+        <div className="min-h-screen bg-gray-100 p-6">
+          <nav className="mb-6">
+            <Link to="/" className="mr-4 text-blue-500 hover:underline">Конструктор</Link>
+            <Link to="/menu" className="text-blue-500 hover:underline">Меню</Link>
+          </nav>
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div>
-                <h1 className="text-3xl font-bold text-center mb-6">Конструктор Бургеров</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <IngredientList
-                    ingredients={INGREDIENTS}
-                    burgerIngredients={burgerIngredients}
-                    onAddIngredient={addIngredient}
-                    onRemoveIngredient={removeIngredient}
-                  />
-                  <BurgerConstructor burgerIngredients={burgerIngredients} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div>
+                  <h1 className="text-3xl font-bold text-center mb-6">Конструктор Бургеров</h1>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <IngredientList
+                      ingredients={INGREDIENTS}
+                      burgerIngredients={burgerIngredients}
+                      onAddIngredient={addIngredient}
+                      onRemoveIngredient={removeIngredient}
+                    />
+                    <BurgerConstructor burgerIngredients={burgerIngredients} />
+                  </div>
+                  <div className="mt-6 flex flex-col items-center">
+                    <input
+                      type="text"
+                      value={burgerName}
+                      onChange={(e) => setBurgerName(e.target.value)}
+                      placeholder="Введите название бургера"
+                      className="p-2 border rounded mb-4 w-64"
+                    />
+                    <button
+                      onClick={saveBurgerToMenu}
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                      Добавить в меню
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-6 flex flex-col items-center">
-                  <input
-                    type="text"
-                    value={burgerName}
-                    onChange={(e) => setBurgerName(e.target.value)}
-                    placeholder="Введите название бургера"
-                    className="p-2 border rounded mb-4 w-64"
-                  />
-                  <button
-                    onClick={saveBurgerToMenu}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  >
-                    Добавить в меню
-                  </button>
-                </div>
-              </div>
-            }
-          />
-          <Route path="/menu" element={<MenuPage />} />
-          <Route path="/edit/:id" element={<EditBurgerPage burgerIngredients={[]} />} />
-        </Routes>
-      </div>
+              }
+            />
+            <Route path="/menu" element={<MenuPage />} />
+            <Route path="/edit/:id" element={<EditBurgerPage />} />
+          </Routes>
+        </div>
+      </ErrorBoundary>
     </Router>
   );
 };
