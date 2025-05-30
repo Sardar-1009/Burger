@@ -7,31 +7,6 @@ interface BurgerConstructorProps {
 }
 
 const BurgerConstructor: React.FC<BurgerConstructorProps> = ({ burgerIngredients = [] }) => {
-  const layers: JSX.Element[] = [];
-  let currentTop = 60;
-
-  
-  if (Array.isArray(burgerIngredients)) {
-    burgerIngredients.forEach((ingredient, index) => {
-      const { name, count } = ingredient;
-      for (let i = 0; i < count; i++) {
-        if (name === 'Salad') {
-          layers.push(<div key={`salad${index}-${i}`} className="lettuce" style={{ top: `${currentTop}px` }}></div>);
-          currentTop += 20;
-        } else if (name === 'Cheese') {
-          layers.push(<div key={`cheese${index}-${i}`} className="cheese" style={{ top: `${currentTop}px` }}></div>);
-          currentTop += 10;
-        } else if (name === 'Meat') {
-          layers.push(<div key={`meat${index}-${i}`} className="patty" style={{ top: `${currentTop}px` }}></div>);
-          currentTop += 40;
-        } else if (name === 'Bacon') {
-          layers.push(<div key={`bacon${index}-${i}`} className="patty" style={{ background: '#b5651d', top: `${currentTop}px` }}></div>);
-          currentTop += 40;
-        }
-      }
-    });
-  }
-
   const burgerState = burgerIngredients.reduce(
     (acc, item) => {
       acc[item.name] = item.count;
@@ -45,10 +20,20 @@ const BurgerConstructor: React.FC<BurgerConstructorProps> = ({ burgerIngredients
   return (
     <div className="w-full md:w-2/3 p-4 border rounded-lg shadow-md bg-white">
       <h2 className="text-xl font-semibold mb-2">Бургер</h2>
-      <div className="burger relative mx-auto">
-        <div className="bun-top"></div>
-        {layers}
-        <div className="bun-bottom"></div>
+      <div className="burger p-4 bg-yellow-200 rounded-lg border border-yellow-300">
+        <div className="bun-top bg-yellow-300 text-center py-2 mb-2 rounded-t-lg">Верхняя булка</div>
+        {burgerIngredients.length === 0 ? (
+          <p className="text-center text-gray-600">Нет ингредиентов</p>
+        ) : (
+          <ul className="list-disc pl-5">
+            {burgerIngredients.map((ingredient, index) => (
+              <li key={index} className="text-gray-800">
+                {ingredient.name} x{ingredient.count}
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="bun-bottom bg-yellow-300 text-center py-2 mt-2 rounded-b-lg">Нижняя булка</div>
       </div>
       <p className="mt-2 text-center">Цена: {totalPrice} сом</p>
     </div>
