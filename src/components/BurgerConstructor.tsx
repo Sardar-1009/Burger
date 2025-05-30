@@ -1,4 +1,3 @@
-// components/BurgerDisplay.tsx
 import React, { JSX } from 'react';
 import { type BurgerIngredient } from '../types/Ingredient';
 

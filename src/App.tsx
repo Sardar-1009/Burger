@@ -104,7 +104,7 @@ const App: React.FC = () => {
             }
           />
           <Route path="/menu" element={<MenuPage />} />
-          <Route path="/edit/:id" element={<EditBurgerPage />} />
+          <Route path="/edit/:id" element={<EditBurgerPage burgerIngredients={[]} />} />
         </Routes>
       </div>
     </Router>

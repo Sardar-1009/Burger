@@ -1,15 +1,10 @@
-import type { BurgerIngredient } from '../types/Ingredient';
-import { INGREDIENTS, BASE_PRICE } from '../constants/ingredients';
-
-export const calculateBurgerPrice = (burgerIngredients: BurgerIngredient[]): number => {
-  let totalPrice: number = BASE_PRICE;
-  
-  burgerIngredients.forEach((burgerIngredient: BurgerIngredient) => {
-    const ingredient = INGREDIENTS.find((ing: { name: string; }) => ing.name === burgerIngredient.name);
-    if (ingredient) {
-      totalPrice += ingredient.price * burgerIngredient.count;
-    }
-  });
-  
-  return totalPrice;
-};
+export const calculatePrice = (burgerState: { [key: string]: number }): number => {
+    const basePrice = 30; 
+    const prices = {
+      Meat: 80,
+      Cheese: 50,
+      Salad: 10,
+      Bacon: 60,
+    };
+    return basePrice + Object.keys(burgerState).reduce((sum, ingredient) => sum + (burgerState[ingredient] || 0) * prices[ingredient], 0);
+  };

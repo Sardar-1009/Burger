@@ -1,5 +1,6 @@
 import React from 'react';
 import { Delete } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 import { Ingredient, BurgerIngredient } from '../types/Ingredient';
 
 interface IngredientItemProps {
@@ -32,13 +33,13 @@ const IngredientItem: React.FC<IngredientItemProps> = ({
       </button>
       <div className="flex items-center space-x-2">
         <span className="font-bold text-lg min-w-[30px] text-center">x{count}</span>
-        <button
+        <IconButton
           onClick={() => onRemove(ingredient.name)}
-          className="p-2 text-red-500 hover:bg-red-50 rounded transition-colors"
           disabled={count === 0}
+          sx={{ color: 'red' }}
         >
           <Delete fontSize="small" />
-        </button>
+        </IconButton>
       </div>
     </div>
   );
