@@ -1,66 +1,113 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import IngredientList from './components/IngredientList';
-import BurgerDisplay from './components/BurgerDisplay';
-import type { BurgerIngredient } from './types/Ingredient';
-import { INGREDIENTS, BASE_PRICE } from './constants/ingredients';
-import { calculateBurgerPrice } from './utils/CalculatePrice';
-import './index.css';
+import BurgerConstructor from './components/BurgerConstructor';
+import { INGREDIENTS } from './constants/ingredients';
+import { BurgerIngredient } from './types/Ingredient';
+import { db } from './firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import MenuPage from './pages/MenuPage';
+import EditBurgerPage from './pages/EditBurgerPage';
 
 const App: React.FC = () => {
-  const [burgerIngredients, setBurgerIngredients] = useState<BurgerIngredient[]>(
-    INGREDIENTS.map((ingredient: { name: any; }) => ({
-      name: ingredient.name,
-      count: 0
-    }))
-  );
+  const [burgerIngredients, setBurgerIngredients] = useState<BurgerIngredient[]>([]);
+  const [burgerName, setBurgerName] = useState<string>('');
 
-  const handleAddIngredient = (ingredientName: string): void => {
-    setBurgerIngredients((prev: BurgerIngredient[]) =>
-      prev.map((ingredient: BurgerIngredient) =>
-        ingredient.name === ingredientName
-          ? { ...ingredient, count: ingredient.count + 1 }
-          : ingredient
-      )
-    );
+  const addIngredient = (ingredientName: string) => {
+    setBurgerIngredients((prev) => {
+      const existing = prev.find((bi) => bi.name === ingredientName);
+      if (existing) {
+        return prev.map((bi) =>
+          bi.name === ingredientName ? { ...bi, count: bi.count + 1 } : bi
+        );
+      }
+      return [...prev, { name: ingredientName, count: 1 }];
+    });
   };
 
-  const handleRemoveIngredient = (ingredientName: string): void => {
-    setBurgerIngredients((prev: BurgerIngredient[]) =>
-      prev.map((ingredient: BurgerIngredient) =>
-        ingredient.name === ingredientName && ingredient.count > 0
-          ? { ...ingredient, count: ingredient.count - 1 }
-          : ingredient
-      )
-    );
+  const removeIngredient = (ingredientName: string) => {
+    setBurgerIngredients((prev) => {
+      const existing = prev.find((bi) => bi.name === ingredientName);
+      if (existing && existing.count > 1) {
+        return prev.map((bi) =>
+          bi.name === ingredientName ? { ...bi, count: bi.count - 1 } : bi
+        );
+      }
+      return prev.filter((bi) => bi.name !== ingredientName);
+    });
   };
 
-  const totalPrice: number = calculateBurgerPrice(burgerIngredients);
+  const saveBurgerToMenu = async () => {
+    if (!burgerName) {
+      alert('Пожалуйста, введите название бургера');
+      return;
+    }
+    if (burgerIngredients.length === 0) {
+      alert('Пожалуйста, добавьте хотя бы один ингредиент');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, 'burgers'), {
+        name: burgerName,
+        ingredients: burgerIngredients,
+        createdAt: new Date().toISOString(),
+      });
+      alert('Бургер успешно добавлен в меню!');
+      setBurgerName('');
+      setBurgerIngredients([]);
+    } catch (error) {
+      console.error('Ошибка при добавлении бургера:', error);
+      alert('Произошла ошибка при добавлении бургера');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-800">🍔 Конструктор Бургеров</h1>
-        </div>
-      </div>
+    <Router>
+      <div className="min-h-screen bg-gray-100 p-6">
+        <nav className="mb-6">
+          <Link to="/" className="mr-4 text-blue-500 hover:underline">Конструктор</Link>
+          <Link to="/menu" className="text-blue-500 hover:underline">Меню</Link>
+        </nav>
 
-      <div className="max-w-6xl mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <IngredientList
-            ingredients={INGREDIENTS}
-            burgerIngredients={burgerIngredients}
-            onAddIngredient={handleAddIngredient}
-            onRemoveIngredient={handleRemoveIngredient}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <h1 className="text-3xl font-bold text-center mb-6">Конструктор Бургеров</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <IngredientList
+                    ingredients={INGREDIENTS}
+                    burgerIngredients={burgerIngredients}
+                    onAddIngredient={addIngredient}
+                    onRemoveIngredient={removeIngredient}
+                  />
+                  <BurgerConstructor burgerIngredients={burgerIngredients} />
+                </div>
+                <div className="mt-6 flex flex-col items-center">
+                  <input
+                    type="text"
+                    value={burgerName}
+                    onChange={(e) => setBurgerName(e.target.value)}
+                    placeholder="Введите название бургера"
+                    className="p-2 border rounded mb-4 w-64"
+                  />
+                  <button
+                    onClick={saveBurgerToMenu}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Добавить в меню
+                  </button>
+                </div>
+              </div>
+            }
           />
-          
-          <BurgerDisplay
-            ingredients={burgerIngredients}
-            totalPrice={totalPrice}
-            basePrice={BASE_PRICE}
-          />
-        </div>
+          <Route path="/menu" element={<MenuPage />} />
+          <Route path="/edit/:id" element={<EditBurgerPage />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 };
 
