@@ -41,6 +41,7 @@ const BurgerConstructor: React.FC<{ burgerIngredients?: BurgerIngredient[] }> = 
   );
 
   const totalPrice = calculatePrice(burgerState);
+  console.log('Calculated totalPrice:', totalPrice);
 
   return (
     <div className="w-full md:w-2/3 p-4 border rounded-lg shadow-md bg-white">
@@ -58,7 +59,8 @@ const BurgerConstructor: React.FC<{ burgerIngredients?: BurgerIngredient[] }> = 
           <div className="bun-bottom" style={{ top: `${currentTop}px` }} />
         </div>
       </div>
-      <p className="mt-4 text-center text-lg font-medium">Цена: {totalPrice} сом</p>
+      <div className="mt-8"></div>
+      <p className="text-center text-lg font-medium">Общая цена: {totalPrice} сом</p>
     </div>
   );
 };

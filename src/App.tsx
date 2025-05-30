@@ -15,31 +15,39 @@ const App: React.FC = () => {
   const [burgerName, setBurgerName] = useState<string>('');
 
   useEffect(() => {
-    console.log('App state burgerIngredients:', burgerIngredients);
+    console.log('App state updated - burgerIngredients:', burgerIngredients);
   }, [burgerIngredients]);
 
   const addIngredient = (ingredientName: string) => {
+    console.log('Adding ingredient in App:', ingredientName);
     setBurgerIngredients((prev) => {
-      const updated = [...prev];
-      const existing = updated.find((bi) => bi.name === ingredientName);
+      const existing = prev.find((bi) => bi.name === ingredientName);
       if (existing) {
-        existing.count += 1;
-      } else {
-        updated.push({ name: ingredientName, count: 1 });
+        const updated = prev.map((bi) =>
+          bi.name === ingredientName ? { ...bi, count: bi.count + 1 } : bi
+        );
+        console.log('Updated (existing) burgerIngredients:', updated);
+        return updated;
       }
+      const updated = [...prev, { name: ingredientName, count: 1 }];
+      console.log('Updated (new) burgerIngredients:', updated);
       return updated;
     });
   };
 
   const removeIngredient = (ingredientName: string) => {
+    console.log('Removing ingredient in App:', ingredientName);
     setBurgerIngredients((prev) => {
-      const updated = [...prev];
-      const existing = updated.find((bi) => bi.name === ingredientName);
+      const existing = prev.find((bi) => bi.name === ingredientName);
       if (existing && existing.count > 1) {
-        existing.count -= 1;
-      } else {
-        return updated.filter((bi) => bi.name !== ingredientName);
+        const updated = prev.map((bi) =>
+          bi.name === ingredientName ? { ...bi, count: bi.count - 1 } : bi
+        );
+        console.log('Updated (reduced) burgerIngredients:', updated);
+        return updated;
       }
+      const updated = prev.filter((bi) => bi.name !== ingredientName);
+      console.log('Updated (removed) burgerIngredients:', updated);
       return updated;
     });
   };

@@ -1,9 +1,8 @@
-/* styles/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Стили для бургера из https://jsbin.com/tomujajeja/1/edit?html,css,output */
+
 .Burger {
   width: 100%;
   margin: auto;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Delete } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { Ingredient, BurgerIngredient } from '../types/Ingredient';
+import { INGREDIENTS } from '../constants/ingredients';
 
 interface IngredientItemProps {
   ingredient: Ingredient;
@@ -16,6 +17,9 @@ const IngredientItem: React.FC<IngredientItemProps> = ({
   onAdd, 
   onRemove 
 }) => {
+  const ingredientData = INGREDIENTS.find((ing) => ing.name === ingredient.name);
+  const price = ingredientData ? ingredientData.price : 0;
+
   return (
     <div className="flex items-center justify-between p-3 border-b border-gray-200 hover:bg-gray-50 transition-colors">
       <button
@@ -29,7 +33,7 @@ const IngredientItem: React.FC<IngredientItemProps> = ({
             className="w-10 h-10 object-cover rounded"
           />
         </div>
-        <span className="font-medium text-gray-800">{ingredient.name}</span>
+        <span className="font-medium text-gray-800">{ingredient.name} - {price} сом</span>
       </button>
       <div className="flex items-center space-x-2">
         <span className="font-bold text-lg min-w-[30px] text-center text-gray-800">x{count}</span>
