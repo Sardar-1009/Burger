@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import IngredientList from './components/IngredientList';
 import BurgerConstructor from './components/BurgerConstructor';
-import ErrorBoundary from './components/ErrorBoundary'; 
+import ErrorBoundary from './components/ErrorBoundary';
 import { INGREDIENTS } from './constants/ingredients';
 import { BurgerIngredient } from './types/Ingredient';
 import { db } from './firebase';
@@ -14,27 +14,33 @@ const App: React.FC = () => {
   const [burgerIngredients, setBurgerIngredients] = useState<BurgerIngredient[]>([]);
   const [burgerName, setBurgerName] = useState<string>('');
 
+  useEffect(() => {
+    console.log('App state burgerIngredients:', burgerIngredients);
+  }, [burgerIngredients]);
+
   const addIngredient = (ingredientName: string) => {
     setBurgerIngredients((prev) => {
-      const existing = prev.find((bi) => bi.name === ingredientName);
+      const updated = [...prev];
+      const existing = updated.find((bi) => bi.name === ingredientName);
       if (existing) {
-        return prev.map((bi) =>
-          bi.name === ingredientName ? { ...bi, count: bi.count + 1 } : bi
-        );
+        existing.count += 1;
+      } else {
+        updated.push({ name: ingredientName, count: 1 });
       }
-      return [...prev, { name: ingredientName, count: 1 }];
+      return updated;
     });
   };
 
   const removeIngredient = (ingredientName: string) => {
     setBurgerIngredients((prev) => {
-      const existing = prev.find((bi) => bi.name === ingredientName);
+      const updated = [...prev];
+      const existing = updated.find((bi) => bi.name === ingredientName);
       if (existing && existing.count > 1) {
-        return prev.map((bi) =>
-          bi.name === ingredientName ? { ...bi, count: bi.count - 1 } : bi
-        );
+        existing.count -= 1;
+      } else {
+        return updated.filter((bi) => bi.name !== ingredientName);
       }
-      return prev.filter((bi) => bi.name !== ingredientName);
+      return updated;
     });
   };
 
@@ -85,7 +91,7 @@ const App: React.FC = () => {
                       onAddIngredient={addIngredient}
                       onRemoveIngredient={removeIngredient}
                     />
-                    <BurgerConstructor burgerIngredients={burgerIngredients} />
+                    <BurgerConstructor key={JSON.stringify(burgerIngredients)} burgerIngredients={burgerIngredients} />
                   </div>
                   <div className="mt-6 flex flex-col items-center">
                     <input

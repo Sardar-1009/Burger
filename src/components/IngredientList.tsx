@@ -17,12 +17,12 @@ const IngredientItem: React.FC<IngredientItemProps> = ({
   onRemove 
 }) => {
   return (
-    <div className="flex items-center justify-between p-3 border-b border-gray-200">
+    <div className="flex items-center justify-between p-3 border-b border-gray-200 hover:bg-gray-50 transition-colors">
       <button
         onClick={() => onAdd(ingredient.name)}
-        className="flex items-center space-x-3 flex-1 hover:bg-gray-50 p-2 rounded transition-colors"
+        className="flex items-center space-x-3 flex-1 p-2 rounded"
       >
-        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-300">
+        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-300">
           <img 
             src={ingredient.image} 
             alt={ingredient.name}
@@ -32,7 +32,7 @@ const IngredientItem: React.FC<IngredientItemProps> = ({
         <span className="font-medium text-gray-800">{ingredient.name}</span>
       </button>
       <div className="flex items-center space-x-2">
-        <span className="font-bold text-lg min-w-[30px] text-center">x{count}</span>
+        <span className="font-bold text-lg min-w-[30px] text-center text-gray-800">x{count}</span>
         <IconButton
           onClick={() => onRemove(ingredient.name)}
           disabled={count === 0}
@@ -61,7 +61,7 @@ const IngredientList: React.FC<IngredientListProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-md">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-800">Ингредиенты</h2>
+        <h2 className="text-xl font-semibold text-gray-800 text-center">Ингредиенты</h2>
       </div>
       <div className="divide-y divide-gray-200">
         {ingredients.map((ingredient: Ingredient) => {
